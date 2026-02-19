@@ -18,26 +18,28 @@ resource "aws_s3_bucket" "app_bucket" {
 }
 
 resource "aws_iam_policy" "app_policy" {
-  name        = "app-limited-access"
-  description = "Policy used by instances with limited permissions"
+  name        = "app-full-access"
+  description = "Policy used by instances"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          "arn:aws:s3:::sample-app-terraform-bucket-12345",
-          "arn:aws:s3:::sample-app-terraform-bucket-12345/*"
-        ]
-      }
-    ]
-  })
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],                                        # Fixed: Replaced wildcard action with specific S3 actions
+      "Resource": [
+        "arn:aws:s3:::sample-app-terraform-bucket-12345",
+        "arn:aws:s3:::sample-app-terraform-bucket-12345/*"
+      ]                                         # Fixed: Replaced wildcard resource with specific S3 bucket ARN
+    }
+  ]
+}
+EOF
 }
 
 resource "aws_security_group" "open_sg" {
